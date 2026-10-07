@@ -2,7 +2,7 @@
 //  Account+CoreDataProperties.swift
 //  FinTrack
 //
-//  Created by Carmen on 05/10/2026.
+//  Created by Carmen on 07/10/2026.
 //
 //
 
@@ -18,10 +18,11 @@ extension Account {
         return NSFetchRequest<Account>(entityName: "Account")
     }
 
-    @NSManaged nonisolated public var id: UUID?
-    @NSManaged nonisolated public var name: String?
     @NSManaged nonisolated public var balance: Double
     @NSManaged nonisolated public var icon: String?
+    @NSManaged nonisolated public var id: UUID?
+    @NSManaged nonisolated public var name: String?
+    @NSManaged nonisolated public var initialBalance: Double
     @NSManaged nonisolated public var transactions: NSSet?
 
 }
