@@ -3,30 +3,50 @@ import CoreData
 
 struct ContentView: View {
 
-    @FetchRequest(
-        sortDescriptors: [
-            NSSortDescriptor(
-                keyPath: \Transaction.date,
-                ascending: false
-            )
-        ]
-    )
-    private var transactions:
-        FetchedResults<Transaction>
+    @Environment(\.managedObjectContext)
+    private var context
 
     var body: some View {
 
-        List(transactions) { transaction in
+        TabView {
 
-            VStack(alignment: .leading) {
-
-                Text(transaction.note ?? "No note")
-
-                Text(
-                    "\(transaction.amount, specifier: "%.2f") €"
+            DashboardView(
+                context: context
+            )
+            .tabItem {
+                Label(
+                    "Resumen",
+                    systemImage: "house"
                 )
-                .foregroundStyle(.secondary)
             }
+
+            TransactionsView(
+                context: context
+            )
+            .tabItem {
+                Label(
+                    "Transacciones",
+                    systemImage: "arrow.left.arrow.right"
+                )
+            }
+
+             BudgetsView(
+                 context: context
+             )
+             .tabItem {
+                 Label(
+                     "Presupuestos",
+                     systemImage: "chart.bar"
+                 )
+            }
+
+            AccountsView(context: context)
+                .tabItem {
+                    Label(
+                        "Cuentas",
+                        systemImage: "creditcard"
+                    )
+                }
         }
     }
 }

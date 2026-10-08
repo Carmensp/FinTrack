@@ -8,7 +8,7 @@ struct CashFlowCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                Text("Flujo de caja")
+                Text("Resumen")
                     .font(.headline)
 
                 Spacer()

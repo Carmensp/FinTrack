@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreData
+import Charts
 
 struct AnalyticsView: View {
     @Environment(\.managedObjectContext)
@@ -50,17 +51,115 @@ struct AnalyticsView: View {
                             .tag(DashboardPeriod.total)
                     }
                     .pickerStyle(.segmented)
-
-                    // Summary
-                    AnalyticsSummaryCard(
+                    
+                    CashFlowCard(
                         income: viewModel.totalIncome,
                         expenses: viewModel.totalExpenses,
-                        savings: viewModel.savings
+                        savings: viewModel.savings,
+                        //points: []
                     )
 
                     // Charts will go here
-                    Text("Gráficos")
-                        .font(.headline)
+                    VStack(alignment: .leading, spacing: 14) {
+                        Text("Flujo de caja")
+                            .font(.headline)
+
+                        Chart(viewModel.chartPoints) { point in
+                            LineMark(
+                                x: .value("Periodo", point.label),
+                                y: .value("Ingresos", point.income)
+                            )
+                            .foregroundStyle(.green)
+                            .interpolationMethod(.catmullRom)
+
+                            LineMark(
+                                x: .value("Periodo", point.label),
+                                y: .value("Gastos", point.expenses)
+                            )
+                            .foregroundStyle(.red)
+                            .interpolationMethod(.catmullRom)
+                        }
+                        .frame(height: 220)
+                        .chartYAxis {
+                            AxisMarks(position: .leading)
+                        }
+                        .chartLegend(position: .bottom)
+                    }
+                    .padding(18)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color(.secondarySystemBackground))
+                    )
+                    
+                    //Chart de categorias
+                    VStack(alignment: .leading, spacing: 14) {
+                        Text("Gastos por categoría")
+                            .font(.headline)
+
+                        if viewModel.categoryPoints.isEmpty {
+                            Text("No hay gastos registrados en este periodo")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 30)
+                        } else {
+                            Chart(viewModel.categoryPoints) { point in
+                                BarMark(
+                                    x: .value("Categoría", point.category),
+                                    y: .value("Gastos", point.amount)
+                                )
+                                .foregroundStyle(.red)
+                                .cornerRadius(6)
+                            }
+                            .frame(height: 220)
+                            .chartYAxis {
+                                AxisMarks(position: .leading)
+                            }
+                        }
+                    }
+                    .padding(18)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color(.secondarySystemBackground))
+                    )
+                    
+                    //Ahorro acumulado
+                    VStack(alignment: .leading, spacing: 14) {
+                        Text("Evolución del ahorro")
+                            .font(.headline)
+
+                        if viewModel.savingsPoints.isEmpty {
+                            Text("No hay movimientos registrados en este periodo")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 30)
+                        } else {
+                            Chart(viewModel.savingsPoints) { point in
+                                LineMark(
+                                    x: .value("Periodo", point.label),
+                                    y: .value("Ahorro", point.savings)
+                                )
+                                .foregroundStyle(.green)
+                                .interpolationMethod(.catmullRom)
+
+                                AreaMark(
+                                    x: .value("Periodo", point.label),
+                                    y: .value("Ahorro", point.savings)
+                                )
+                                .foregroundStyle(.green.opacity(0.12))
+                            }
+                            .frame(height: 220)
+                            .chartYAxis {
+                                AxisMarks(position: .leading)
+                            }
+                        }
+                    }
+                    .padding(18)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color(.secondarySystemBackground))
+                    )
 
                 }
                 .padding(.horizontal)
@@ -83,3 +182,30 @@ struct AnalyticsView: View {
     }
 }
 
+private struct AnalyticsMetric: View {
+    let title: String
+    let amount: Double
+    let color: Color
+
+    var body: some View {
+        VStack(
+            alignment: .leading,
+            spacing: 4
+        ) {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            Text(
+                amount,
+                format: .currency(code: "EUR")
+            )
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(color)
+        }
+        .frame(
+            maxWidth: .infinity,
+            alignment: .leading
+        )
+    }
+}

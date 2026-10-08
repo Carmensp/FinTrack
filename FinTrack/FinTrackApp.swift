@@ -4,8 +4,13 @@ import CoreData
 @main
 struct FinTrackApp: App {
 
-    let persistenceController =
-        PersistenceController.shared
+    let persistenceController = PersistenceController.shared
+    
+    init() {
+        AppSeeder.seed(
+            context: persistenceController.container.viewContext
+        )
+    }
 
     var body: some Scene {
 
