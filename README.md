@@ -27,6 +27,7 @@ FinTrack is an iOS personal-finance app built with **SwiftUI**, **Core Data**, a
 
 - Swift / SwiftUI
 - Core Data
+- Charts
 - MVVM
 - Repository pattern
 - XCTest 
